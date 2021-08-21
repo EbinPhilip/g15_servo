@@ -14,7 +14,7 @@ int main(void)
 {
     signal(SIGINT, signalHandler);
 
-    Jetson_Nano_HAL hal("/dev/ttyTh0", 10);
+    Jetson_Nano_HAL hal("/dev/ttyUSB0", 18, Driver_Mode::Mode::B);
     G15_Servo servo(hal);
 
     servo.begin(19200);

@@ -18,7 +18,7 @@ Jetson_Nano_HAL::~Jetson_Nano_HAL()
 
 void Jetson_Nano_HAL::setDriverMode(Driver_Mode::Mode mode)
 {
-    driver_mode_ = mode;
+    driver_mode_.setMode(mode);
 }
 
 void Jetson_Nano_HAL::setRxMode()
