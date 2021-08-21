@@ -17,8 +17,8 @@ struct Driver_Mode
         B
     };
 
-    bool rx_mode;
-    bool tx_mode;
+    uint8_t rx_mode;
+    uint8_t tx_mode;
 
     Driver_Mode(Mode mode = Mode::B)
     {
