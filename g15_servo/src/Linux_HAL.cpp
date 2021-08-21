@@ -1,4 +1,5 @@
-#include <unistd.h>
+#include <thread>
+#include <chrono>
 
 #include "Linux_HAL.h"
 
@@ -26,7 +27,7 @@ void Linux_HAL::end()
 
 void Linux_HAL::delayMilliseconds(unsigned long ms)
 {
-    usleep(ms);
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 void Linux_HAL::writeData(uint8_t data[], uint8_t length)
