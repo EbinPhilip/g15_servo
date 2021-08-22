@@ -20,6 +20,8 @@ public:
     virtual void setTxMode() override;
 
 protected:
+    FILE* _openFile(const char* path, const char* mode);
+
     uint8_t ctrlpin_;
     FILE* gpio_fs_handle_;
     Driver_Mode driver_mode_;

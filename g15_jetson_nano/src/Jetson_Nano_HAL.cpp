@@ -1,8 +1,7 @@
 
 #include <cstdio>
+#include <ios>
 #include "Jetson_Nano_HAL.h"
-
-const std::string g15_jetson_nano_hal_string = "g15_jetson_nano_hal";
 
 Jetson_Nano_HAL::Jetson_Nano_HAL(const std::string &serial_port,
                                  uint8_t ctrlpin,
@@ -11,7 +10,7 @@ Jetson_Nano_HAL::Jetson_Nano_HAL(const std::string &serial_port,
       ctrlpin_(ctrlpin),
       driver_mode_(driver_mode)
 {
-    FILE *fd = fopen("/sys/class/gpio/export", "w");
+    FILE *fd = _openFile("/sys/class/gpio/export", "w");
     fprintf(fd, "%d", ctrlpin_);
     fclose(fd);
 
@@ -20,19 +19,19 @@ Jetson_Nano_HAL::Jetson_Nano_HAL(const std::string &serial_port,
     char gpio_string[100];
 
     sprintf(gpio_string, "/sys/class/gpio/gpio%d/direction", ctrlpin_);
-    fd = fopen(gpio_string, "w");
+    fd = _openFile(gpio_string, "w");
     fprintf(fd, "out");
     fclose(fd);
 
     sprintf(gpio_string, "/sys/class/gpio/gpio%d/value", ctrlpin_);
-    gpio_fs_handle_ = fopen(gpio_string, "w");
+    gpio_fs_handle_ = _openFile(gpio_string, "w");
 }
 
 Jetson_Nano_HAL::~Jetson_Nano_HAL()
 {
     fclose(gpio_fs_handle_);
 
-    FILE *fd = fopen("/sys/class/gpio/unexport", "w");
+    FILE *fd = _openFile("/sys/class/gpio/unexport", "w");
     fprintf(fd, "%d", ctrlpin_);
     fclose(fd);
 }
@@ -50,4 +49,17 @@ void Jetson_Nano_HAL::setRxMode()
 void Jetson_Nano_HAL::setTxMode()
 {
     fprintf(gpio_fs_handle_, "%d", driver_mode_.tx_mode);
+}
+
+FILE* Jetson_Nano_HAL::_openFile(const char* path, const char* mode)
+{
+    FILE* ret = fopen(path, mode);
+    if (!ret)
+    {
+        throw std::ios_base::failure("file open failed: "+std::string(path));
+    }
+    else
+    {
+        return ret;
+    }
 }
