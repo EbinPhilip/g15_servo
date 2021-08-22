@@ -8,11 +8,14 @@ Jetson_Nano_HAL::Jetson_Nano_HAL(const std::string &serial_port,
                                  uint8_t ctrlpin,
                                  Driver_Mode::Mode driver_mode)
     : Linux_HAL(serial_port),
+      ctrlpin_(ctrlpin),
       driver_mode_(driver_mode)
 {
-    FILE* fd = fopen("/sys/class/gpio/export", "w");
+    FILE *fd = fopen("/sys/class/gpio/export", "w");
     fprintf(fd, "%d", ctrlpin_);
     fclose(fd);
+
+    delayMilliseconds(20);
 
     char gpio_string[100];
 
@@ -29,7 +32,7 @@ Jetson_Nano_HAL::~Jetson_Nano_HAL()
 {
     fclose(gpio_fs_handle_);
 
-    FILE* fd = fopen("/sys/class/gpio/unexport", "w");
+    FILE *fd = fopen("/sys/class/gpio/unexport", "w");
     fprintf(fd, "%d", ctrlpin_);
     fclose(fd);
 }
