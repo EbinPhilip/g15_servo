@@ -117,13 +117,12 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC
   src/Jetson_Nano_HAL.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
-  gpiod
 )
 
 ## Add cmake target dependencies of the library
