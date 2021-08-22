@@ -8,13 +8,16 @@ Jetson_Nano_HAL::Jetson_Nano_HAL(const std::string &serial_port,
                                  const std::string &gpio_chip,
                                  Driver_Mode::Mode driver_mode)
     : Linux_HAL(serial_port),
-      gpio_chip_(gpio_chip),
-      gpio_line_(gpio_chip_.get_line(ctrlpin)),
       driver_mode_(driver_mode)
 {
-    gpio_line_.request({g15_jetson_nano_hal_string,
-                        gpiod::line_request::DIRECTION_OUTPUT,
-                        driver_mode_.tx_mode});
+    gpio_chip_ = gpiod_chip_open("/dev/gpiochip0");
+    gpio_line_ = gpiod_chip_get_line(gpio_chip_, ctrlpin);
+    int ret = gpiod_line_request_output(gpio_line_, g15_jetson_nano_hal_string.c_str(), driver_mode_.tx_mode);
+}
+
+Jetson_Nano_HAL::~Jetson_Nano_HAL()
+{
+    gpiod_chip_close(gpio_chip_);
 }
 
 void Jetson_Nano_HAL::setDriverMode(Driver_Mode::Mode mode)
@@ -24,10 +27,10 @@ void Jetson_Nano_HAL::setDriverMode(Driver_Mode::Mode mode)
 
 void Jetson_Nano_HAL::setRxMode()
 {
-    gpio_line_.set_value(driver_mode_.rx_mode);
+    gpiod_line_set_value(gpio_line_, driver_mode_.rx_mode);
 }
 
 void Jetson_Nano_HAL::setTxMode()
 {
-    gpio_line_.set_value(driver_mode_.rx_mode);
+    gpiod_line_set_value(gpio_line_, driver_mode_.rx_mode);
 }

@@ -123,7 +123,7 @@ add_library(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
-  gpiodcxx
+  gpiod
 )
 
 ## Add cmake target dependencies of the library
