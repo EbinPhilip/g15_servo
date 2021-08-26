@@ -1,4 +1,5 @@
-#include <unistd.h>
+#include <chrono>
+#include <thread>
 
 #include "Linux_HAL.h"
 
@@ -26,14 +27,14 @@ void Linux_HAL::end()
 
 void Linux_HAL::delayMilliseconds(unsigned long ms)
 {
-    usleep(ms);
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 void Linux_HAL::writeData(uint8_t data[], uint8_t length)
 {
     serial_.flushInput();
     serial_.write(data, length);
-    serial_.flushOutput();
+    serial_.flush();
 }
 
 void Linux_HAL::writeData(uint8_t header[], uint8_t data[], const uint8_t& checksum,  const uint8_t& header_length, const uint8_t& data_length)
@@ -42,7 +43,7 @@ void Linux_HAL::writeData(uint8_t header[], uint8_t data[], const uint8_t& check
     serial_.write(header, header_length);
     serial_.write(data, data_length);
     serial_.write(&checksum, 1);
-    serial_.flushOutput();
+    serial_.flush();
 }
 
 uint8_t Linux_HAL::readData(uint8_t data[], uint8_t length)
