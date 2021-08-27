@@ -1,35 +1,17 @@
-/*
-This example shows how to move G15 knob to certain angle with different speed.
-
-Function:
-  setLED(G15_ID, onOff); // Control G15 LED. onOff: ON or OFF
-  setSpeed(G15_ID, speed); // Set G15 speed: 0 - 1023
-  setPosAngle(G15_ID, angle); // Set G15 angle: 0 - 359
-
-Product page:
-  Cytron G15 Shield: http://www.cytron.com.my/p-shield-g15
-  G15 Cube Servo: http://www.cytron.com.my/p-g15
-  CT-UNO: http://www.cytron.com.my/p-ct-uno
-
-Original written by:
-            Ing Hui, Cytron Technologies
-
-Modified:
-  29/06/15  Idris, Cytron Technologies
-*/
-
 #include <SoftwareSerial.h>
 
 #include <Arduino.h>
 #include "G15_Servo.h"
 #include "Arduino_HAL.h"
+#include "Arduino_Software_Serial_HAL.h"
+#include "Arduino_Serial_HAL.h"
 #include "G15_Constants.h"
 
 #include "Arduino_Error_Handler.h"
 
-//SoftwareSerial serial(2,3);
 
-Arduino_HAL hal(2, 3, 8, Driver_Mode::Mode::B); // Control pin
+// Arduino_Software_Serial_HAL hal(2, 3, 8, Driver_Mode::Mode::B);
+Arduino_Serial_HAL hal(&Serial3, 8, Driver_Mode::Mode::B);
 Arduino_Error_Handler error_handler(false);
 G15_Servo g15(hal, &error_handler);
 
