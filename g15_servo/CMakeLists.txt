@@ -121,6 +121,15 @@ add_library(${PROJECT_NAME}
   src/G15_Servo.cpp
   src/Linux_HAL.cpp
 )
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
+
+add_executable(${PROJECT_NAME}_example src/example.cpp)
+target_link_libraries(${PROJECT_NAME}_example
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

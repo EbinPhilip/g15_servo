@@ -21,7 +21,6 @@ public:
 
 protected:
     uint8_t ctrlpin_;
-    SoftwareSerial *serial_;
     Driver_Mode driver_mode_;
 };
 

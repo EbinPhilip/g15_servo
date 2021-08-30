@@ -5,15 +5,17 @@
 #include "Arduino_HAL.h"
 #include "Arduino_Software_Serial_HAL.h"
 #include "Arduino_Serial_HAL.h"
+#include "Arduino_Passthrough_HAL.h"
 #include "G15_Constants.h"
 
 #include "Arduino_Error_Handler.h"
 
 
-// Arduino_Software_Serial_HAL hal(2, 3, 8, Driver_Mode::Mode::B);
-Arduino_Serial_HAL hal(&Serial3, 8, Driver_Mode::Mode::B);
+Arduino_Software_Serial_HAL hal(2, 3, 8, Driver_Mode::Mode::B);
+// Arduino_Serial_HAL hal(Serial3, 8, Driver_Mode::Mode::B);
+// Arduino_Passthrough_HAL hal_p(hal);
 Arduino_Error_Handler error_handler(false);
-G15_Servo g15(hal, &error_handler);
+G15_Servo g15(hal &error_handler);
 
 uint16_t position1 = ConvertAngleToPos(90);
 uint16_t position2 = ConvertAngleToPos(180);
