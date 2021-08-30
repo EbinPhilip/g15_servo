@@ -2,7 +2,6 @@
 #define __LINUX_PASSTHROUGH_HAL_H__
 
 #include "Linux_HAL.h"
-#include "G15_Passthrough.h"
 
 class Linux_Passthrough_HAL : public Linux_HAL
 {

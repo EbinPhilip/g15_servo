@@ -5,7 +5,7 @@
 
 #include "Linux_HAL.h"
 #include "Linux_Passthrough_HAL.h"
-#include "G15_Servo.h"
+#include "g15_servo/G15_Servo.h"
 
 bool stop_execution = false;
 
