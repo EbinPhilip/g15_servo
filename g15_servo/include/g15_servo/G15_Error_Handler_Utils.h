@@ -1,6 +1,8 @@
 #ifndef __G15_ERROR_HANDLER_UTILS_H__
 #define __G15_ERROR_HANDLER_UTILS_H__
 
+#include <stdint.h>
+
 #include "G15_Constants.h"
 
 class Packet_Config

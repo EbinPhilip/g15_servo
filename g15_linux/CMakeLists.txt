@@ -1,13 +1,16 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(g15_servo)
+project(g15_linux)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+# add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  g15_servo
+  serial
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -100,8 +103,8 @@ find_package(catkin REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
  INCLUDE_DIRS include
- LIBRARIES g15_servo
-#  CATKIN_DEPENDS serial
+ LIBRARIES g15_linux
+ CATKIN_DEPENDS g15_servo serial
 #  DEPENDS system_lib
 )
 
@@ -112,17 +115,27 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-    include/${PROJECT_NAME}
-    ${catkin_INCLUDE_DIRS}
+  include/${PROJECT_NAME}
+  ${catkin_INCLUDE_DIRS}
 )
 
-# Declare a C++ library
 add_library(${PROJECT_NAME}
-  src/G15_Servo.cpp
+  src/Linux_HAL.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
 )
+
+add_executable(${PROJECT_NAME}_example src/example.cpp)
+target_link_libraries(${PROJECT_NAME}_example
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+)
+
+## Declare a C++ library
+# add_library(${PROJECT_NAME}
+#   src/${PROJECT_NAME}/g15_linux.cpp
+# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -132,7 +145,7 @@ target_link_libraries(${PROJECT_NAME}
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/g15_servo_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/g15_linux_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -196,7 +209,7 @@ target_link_libraries(${PROJECT_NAME}
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_g15_servo.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_g15_linux.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

@@ -11,6 +11,8 @@
 #define iRESET 0x06		 // Set factory defaults
 #define iSYNC_WRITE 0x83 // Simultaneously control multiple actuators
 
+#define PACKET_HEADER 0xFF
+
 // Device Error codes
 #define ALARM_INST 0x40
 #define ALARM_OVERLOAD 0x20
@@ -35,6 +37,10 @@
 
 #define SPEED_MAX_REGISTER 1023
 #define SPEED_MAX_RPM 112.83
+
+#define SerialTimeOut 100L
+
+#define RESPONSE_PACKET_LENGTH 6
 
 // Control register addresses for G15 parameters
 enum
@@ -90,5 +96,19 @@ enum
 	PUNCH_L,				// 0x30
 	PUNCH_H					// 0x31
 };
+
+namespace sent_packet
+{
+	enum packet_id
+	{
+		header1,
+		header2,
+		id,
+		length,
+		instruction,
+		address,
+		data_length
+	};
+}
 
 #endif

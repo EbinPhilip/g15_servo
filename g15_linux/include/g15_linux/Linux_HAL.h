@@ -4,7 +4,7 @@
 #include <string>
 
 #include "serial/serial.h"
-#include "G15_HAL.h"
+#include "g15_servo/G15_HAL.h"
 
 class Linux_HAL : public G15_HAL
 {

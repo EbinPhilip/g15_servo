@@ -12,8 +12,6 @@
 #define ConvertRPMToVal(speed) (uint16_t)( (float)(speed/112.83) * 1023UL )
 #define ConvertValToRPM(val) (float)((val/1023.0f) * 112.83f)
 
-#define SerialTimeOut 100L
-
 #define CW 1
 #define CCW 0
 #define ON 1
