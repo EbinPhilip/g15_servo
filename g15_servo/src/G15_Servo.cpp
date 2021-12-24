@@ -569,6 +569,12 @@ uint16_t G15_Servo::ping(uint8_t servoID, uint8_t *data)
 	return (sendPacket(servoID, iPING, data, 0));
 }
 
+uint16_t G15_Servo::ping(uint8_t servoID)
+{
+	uint8_t data[6];
+	return ping(servoID, data);
+}
+
 //******************************************************************
 //*	GET CURRENT POSITION
 //******************************************************************

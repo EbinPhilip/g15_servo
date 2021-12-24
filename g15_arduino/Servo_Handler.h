@@ -8,8 +8,8 @@
 class Servo_Handler : public Handler_Interface
 {
 public:
-    Servo_Handler(Arduino_Passthrough_HAL& hal, uint32_t baudrate, uint32_t servo_timeout = SerialTimeOut);
-
+    Servo_Handler(Arduino_Passthrough_HAL& hal);
+    void begin( uint32_t baudrate, uint32_t servo_timeout = SerialTimeOut);
     virtual void handle_packet(Passthrough_Packet& packet) override;
 
 protected:
