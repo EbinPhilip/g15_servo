@@ -2,8 +2,13 @@
 
 #include "Servo_Handler.h"
 
-Servo_Handler::Servo_Handler(Arduino_Passthrough_HAL& hal, uint32_t baudrate, uint32_t servo_timeout = SerialTimeOut)
+Servo_Handler::Servo_Handler(Arduino_Passthrough_HAL& hal)
     : hal_(hal)
+{
+    
+}
+
+void Servo_Handler::begin(uint32_t baudrate, uint32_t servo_timeout = SerialTimeOut)
 {
     hal_.begin(baudrate, servo_timeout);
 }
@@ -24,6 +29,10 @@ void Servo_Handler::handle_packet(Passthrough_Packet& packet)
                     read_data_length += packet.data[sent_packet::data_length];
                 }
                 hal_.writeData(packet.data, packet.current_length);
+                if (packet.data[sent_packet::id] == BROADCAST_ID)
+                {
+                    return; // no return packet
+                }
                 int read_count = hal_.readData(packet.data, read_data_length);
                 for (uint8_t i = 0; i < read_count; i++)
                 {

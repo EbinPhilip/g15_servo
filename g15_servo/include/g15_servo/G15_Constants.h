@@ -37,6 +37,7 @@
 
 #define SPEED_MAX_REGISTER 1023
 #define SPEED_MAX_RPM 112.83
+#define SPEED_MAX_RADIANS 11.81553
 
 #define SerialTimeOut 100L
 

@@ -69,6 +69,8 @@ public:
 	uint16_t factoryReset(uint8_t servoID);
 	uint16_t ping(uint8_t servoID, uint8_t *data);
 
+	uint16_t ping(uint8_t servoID);
+
 	uint16_t getPos(uint8_t servoID, uint8_t *data);
 	uint16_t getSpeed(uint8_t servoID, uint8_t *data);
 	uint16_t getLoad(uint8_t servoID, uint8_t *data);
