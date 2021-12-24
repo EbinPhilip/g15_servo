@@ -1,0 +1,18 @@
+actuators:
+  - package: g15_ros_control
+    class: G15_Actuator_Config_Parser
+    config:
+      dynx_3:
+        servo_id: 3
+        controller_name: g15_controller
+        cw_limit_deg: 225.0
+        ccw_limit_deg: 45.0
+
+controllers:
+  - package: g15_ros_control
+    class: G15_Controller_Config_Parser
+    config:
+      g15_controller:
+        controller_id: 1
+        port: /dev/ttyACM0
+        baud_rate: 115200
