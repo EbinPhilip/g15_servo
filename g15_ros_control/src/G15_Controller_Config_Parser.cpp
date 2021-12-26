@@ -29,7 +29,7 @@ void G15_Controller_Config_Parser::parseConfig(XmlRpc::XmlRpcValue& config, Actu
         std::string controller_port = static_cast<std::string>(it->second["port"]);
         unsigned int controller_baud_rate = (unsigned int)static_cast<int>(it->second["baud_rate"]);
 
-        Actuator_Controller_Ptr controller_ptr = std::make_shared<G15_Controller>(controller_name, controller_port);
+        Actuator_Controller_Ptr controller_ptr = std::make_shared<G15_Controller>(controller_name, controller_port, *stop_flag_ptr_);
         controller_map->insert(std::make_pair(controller_name, controller_ptr));
     }
 }
