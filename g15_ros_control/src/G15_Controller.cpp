@@ -1,17 +1,39 @@
 #include "G15_Controller.h"
 #include <rotational_units/Rotational_Units.h>
 
+#include <ros/console.h>
+
 #include <stdexcept>
 #include <cmath>
 
-G15_Controller::G15_Controller(const std::string &controller_name, const std::string &serial_port)
+G15_Controller::G15_Controller(const std::string &controller_name,
+                            const std::string &serial_port, bool& stop_flag)
     : controller_name_(controller_name),
       serial_port_(serial_port),
+      perform_actuator_enable_(false),
+      actuator_enabled_status_(false),
+      stop_flag_(stop_flag),
+      error_status_(false),
       hal_(serial_port),
-      servo_controller_(hal_)
+      servo_controller_(hal_, &error_handler_)
 {
     servo_controller_.begin(115200);
     hal_.delayMilliseconds(2000);
+}
+
+G15_Controller::~G15_Controller()
+{
+    if (actuator_enabled_status_)
+    {
+        try
+        {
+            disableActuators();
+        }
+        catch(...)
+        {
+            ROS_ERROR("%s: unexpected error in destructor", controller_name_.c_str());
+        }
+    }
 }
 
 void G15_Controller::addServo(G15_Actuator_Properties_Ptr actuator)
@@ -27,7 +49,7 @@ void G15_Controller::addServo(G15_Actuator_Properties_Ptr actuator)
             actuator->cw_limit_deg.Value(),POSITION_MAX_DEGREES, POSITION_MAX_REGISTER);
         uint16_t ccw_limit = servo_controller_.convertToRegisterValue(
             actuator->ccw_limit_deg.Value(),POSITION_MAX_DEGREES, POSITION_MAX_REGISTER);
-        servo_controller_.setAngleLimit(actuator->servo_id, cw_limit, ccw_limit);
+        _handleErrorResponse(servo_controller_.setAngleLimit(actuator->servo_id, cw_limit, ccw_limit));
 
         servo_map_.insert(std::make_pair(actuator->actuator_name, actuator));
     }
@@ -40,7 +62,12 @@ void G15_Controller::readState()
 
     for (auto servo : servo_map_)
     {
-        if ( !servo_controller_.readInstruction(servo.second->servo_id, PRESENT_POSITION_L, read_bytes, 6) )
+        if (stop_flag_ || error_status_)
+        {
+            return;
+        }
+
+        if ( !_checkResponse(servo_controller_.readInstruction(servo.second->servo_id, PRESENT_POSITION_L, read_bytes, 6)) )
         {
             value = read_bytes[3] & 0x01;
             value = (value << 8) | read_bytes[2];
@@ -73,8 +100,19 @@ void G15_Controller::readState()
 
 void G15_Controller::writeCommand()
 {
+     if (perform_actuator_enable_)
+    {
+        _enableActuators();
+    }
+
+
     for (auto servo : servo_map_)
     {
+        if (stop_flag_ || error_status_ || !actuator_enabled_status_)
+        {
+            return;
+        }
+
         RUnits::Radians pos_rad = servo.second->command.position;
         RUnits::Degrees pos_max = 360.0;
         if (pos_rad.Value()<0)
@@ -92,8 +130,47 @@ void G15_Controller::writeCommand()
                 (uint8_t)(velocity >> 8),
             };
         
-        servo_controller_.writeInstruction(servo.second->servo_id, GOAL_POSITION_L, packet, 4);
+        _checkResponse(servo_controller_.writeInstruction(servo.second->servo_id, GOAL_POSITION_L, packet, 4));
     }
+}
+
+void G15_Controller::enableActuators()
+{
+    if (!actuator_enabled_status_)
+        perform_actuator_enable_ = true;
+}
+
+void G15_Controller::disableActuators()
+{
+    if (actuator_enabled_status_)
+    {
+        try
+        {
+            for (auto& servo : servo_map_)
+            {   
+                _handleErrorResponse(servo_controller_.setTorqueOnOff(servo.second->servo_id, 0));
+                _handleErrorResponse(servo_controller_.setLED(servo.second->servo_id, 0));
+            }
+        }
+        catch(const std::exception& e)
+        {
+            std::string error_msg = e.what();
+            ROS_ERROR("%s", error_msg.c_str());
+        }
+        catch (...)
+        {
+            ROS_ERROR("%s: unexpected error, disable failed", controller_name_.c_str());
+        }    
+        
+        actuator_enabled_status_ = false;
+    }
+}
+
+bool G15_Controller::getErrorDetails(std::string& error_msg)
+{
+    if (error_status_)
+        error_msg = error_handler_.getErrorDetails();
+    return error_status_;
 }
 
 Actuator_Properties_Ptr G15_Controller::getActuator(const std::string& name)
@@ -115,4 +192,48 @@ void G15_Controller::getActuatorNames(std::vector<std::string>& names)
     {
         names.push_back(it.first);
     }
+}
+
+void G15_Controller::_enableActuators()
+{
+    if (stop_flag_ || error_status_)
+    {
+        return;
+    }
+
+    if (actuator_enabled_status_)
+    {
+        perform_actuator_enable_ = false;
+        return;
+    }
+
+    for (auto& servo : servo_map_)
+    {   
+        _handleErrorResponse(servo_controller_.setTorqueOnOff(servo.second->servo_id, 1));
+        _handleErrorResponse(servo_controller_.setLED(servo.second->servo_id, 1));
+    }
+
+    actuator_enabled_status_ = true;
+}
+
+uint8_t G15_Controller::_checkResponse(uint8_t error, bool throw_exception)
+{
+    if (error)
+    {
+        stop_flag_ = true;
+        error_status_ = true;
+        error_description_ = error_handler_.getErrorDetails();
+
+        if (throw_exception)
+        {
+            throw std::runtime_error(error_description_);
+        }
+    }
+
+    return error;
+}
+
+uint8_t G15_Controller::_handleErrorResponse(uint8_t error)
+{
+    return _checkResponse(error);
 }

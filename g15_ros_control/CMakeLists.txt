@@ -130,6 +130,7 @@ add_library(${PROJECT_NAME}
   src/G15_Actuator_Config_Parser.cpp
   src/G15_Controller_Config_Parser.cpp
   src/G15_Controller.cpp
+  src/G15_ROS_Error_Handler.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
