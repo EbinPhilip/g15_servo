@@ -4,9 +4,7 @@
     <rosparam file="$(find g15_ros_control)/config/transmissions.yaml" command="load" ns="robot_hw_example/"/>
     <rosparam file="$(find g15_ros_control)/config/controllers.yaml" command="load"/>
 
-    <node name="g15_ros_control_example" pkg="configurable_control_hw" type="Node" output="screen">
-        <param name="loop_rate_hz" type="double" value="10.0" />
-    </node>
+    <node name="g15_ros_control_example" pkg="g15_ros_control" type="g15_ros_control_example" output="screen"/>
 
     <node
         name="controller_spawner"
